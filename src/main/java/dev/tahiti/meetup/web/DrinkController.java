@@ -18,7 +18,7 @@ public class DrinkController {
 	private final DrinkRepository drinkRepo;
 
 	@GetMapping
-	public List<DrinkResponseDto> getAllTables() {
+	public List<DrinkResponseDto> getAllDrinks() {
 		return drinkRepo.findAll().stream().map(Drink::getLabel).map(DrinkResponseDto::new).toList();
 	}
 	

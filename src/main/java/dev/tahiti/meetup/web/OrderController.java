@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.tahiti.meetup.domain.DrinkOrder;
 import dev.tahiti.meetup.domain.Order;
 import dev.tahiti.meetup.domain.OrderStatus;
+import dev.tahiti.meetup.domain.Table;
 import dev.tahiti.meetup.jpa.DrinkRepository;
 import dev.tahiti.meetup.jpa.OrderRepository;
 import dev.tahiti.meetup.jpa.TableRepository;
@@ -39,6 +40,7 @@ public class OrderController {
 
 	@GetMapping
 	@Transactional(readOnly = true)
+	//@PreAuthorize("hasAnyAuthority('WAITER', 'BARMAN', 'CASHIER')")
 	List<OrderResponseDto> getTableOrders(@RequestParam(required = true, name = "table") String tableName,
 			@RequestParam(required = false, defaultValue = "PLACED,SERVED") List<OrderStatus> statuses) {
 		final var orders = orderRepo.findByTableLabelLikeIgnoreCaseAndStatusIn(tableName, statuses);
@@ -47,36 +49,38 @@ public class OrderController {
 				.toList();
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{orderId}")
 	@Transactional(readOnly = true)
-	OrderResponseDto getOrderById(@PathVariable(name = "orderId") Long orderId) {
-		return orderRepo.findById(orderId).map(OrderController::map).orElseThrow();
+	//@PreAuthorize("hasAnyAuthority('WAITER', 'BARMAN', 'CASHIER') or #order.placedBy eq #claims.subject")
+	OrderResponseDto getOrderById(@PathVariable(name = "orderId") Order order/*, @AuthenticationPrincipal OpenidClaimSet claims*/) {
+		return map(order);
 	}
 
 	@PostMapping
 	@Transactional(readOnly = false)
+	//@PreAuthorize("isAuthenticated()")
 	ResponseEntity<?> placeOrder(@RequestBody @Valid OrderCreationDto dto) throws URISyntaxException {
 		final var table = tableRepo.findByLabel(dto.getTable()).orElse(null);
-		var order = new Order(table);
+		final var order = new Order(table);
 		order.setDrinks(dto.getLines().stream()
-				.map(l -> drinkRepo.findByLabel(l.getDrink()).map(d -> new DrinkOrder(l.getQuantity(), d)))
+				.map(l -> drinkRepo.findByLabel(l.getDrink()).map(d -> new DrinkOrder(order, l.getQuantity(), d)))
 				.filter(Optional::isPresent).map(Optional::get).toList());
 		order.setStatus(OrderStatus.PLACED);
-		order = orderRepo.save(order);
-		return ResponseEntity.accepted().location(new URI("/orders/%d".formatted(order.getId()))).build();
+		final var saved = orderRepo.save(order);
+		return ResponseEntity.accepted().location(new URI("/orders/%d".formatted(saved.getId()))).build();
 	}
 	
-	@PutMapping("/{id}/status")
+	@PutMapping("/{orderId}/status")
 	@Transactional(readOnly = false)
-	ResponseEntity<?> updateOrder(@PathVariable(name = "orderId") Long orderId, @RequestBody OrderStatusUpdateDto dto) {
-		final var order = orderRepo.findById(orderId).orElseThrow();
+	//@PreAuthorize("hasAnyAuthority('BARMAN', 'CASHIER')")
+	ResponseEntity<?> updateOrderStatus(@PathVariable(name = "orderId") Order order, @RequestBody OrderStatusUpdateDto dto) {
 		order.setStatus(dto.getNewStatus());
 		orderRepo.save(order);
 		return ResponseEntity.accepted().build();
 	}
 
 	static OrderResponseDto map(Order o) {
-		return new OrderResponseDto(o.getId(), o.getTable().getLabel(), o.getStatus().name(),
+		return new OrderResponseDto(o.getId(), Optional.ofNullable(o.getTable()).map(Table::getLabel).orElse(null), o.getStatus().name(),
 				o.getDrinks().stream().map(d -> new OrderLineDto(d.getDrink().getLabel(), d.getQuantity())).toList());
 	}
 }

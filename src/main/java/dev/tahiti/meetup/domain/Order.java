@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,18 +23,24 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Order {
 
 	@Id
 	@GeneratedValue
 	Long id;
 	
+	@Column(nullable = false)
+	private String placedBy;
+	
 	@ManyToOne(optional = true)
 	private Table table;
 	
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+	@Default
+	@OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<DrinkOrder> drinks = new ArrayList<>();
-	
+
+	@Default
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status = OrderStatus.PLACED;
