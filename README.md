@@ -84,6 +84,8 @@ As we replaced the default `JwtAuthenticationToken` with `OAuthentication<Openid
     }
 ```
 
+If you face difficulties, you may refer to the `finished` branch which contains working solution.
+
 ## To go further
 Follow this [tutorials](https://github.com/ch4mpy/spring-addons/tree/master/samples/tutorials) and [samples](https://github.com/ch4mpy/spring-addons/tree/master/samples)
 
