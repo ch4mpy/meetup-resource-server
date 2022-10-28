@@ -1,0 +1,57 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Compiled output
+**/dist
+**/tmp
+**/out-tsc
+**/bazel-out
+**/target
+
+# Node
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+**/.factorypath
+api/.metadata/
+
+# Visual Studio Code
+**/.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+**/.angular
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+/.metadata/
+
+# certificates
+**/*.crt
+**/*.jks
+**/*.pem
+**/*.p12
+**/*.key
+
+# OpenAPI spec files
+*.openapi.json
+
+angular-workspace-bckp/
