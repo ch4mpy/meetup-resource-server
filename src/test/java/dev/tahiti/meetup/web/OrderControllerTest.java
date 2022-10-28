@@ -1,7 +1,7 @@
 package dev.tahiti.meetup.web;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 
 import com.c4_soft.springaddons.security.oauth2.test.annotations.OpenId;
 import com.c4_soft.springaddons.security.oauth2.test.annotations.OpenIdClaims;
@@ -44,8 +43,6 @@ class OrderControllerTest {
 	@Autowired
 	MockMvcSupport api;
 
-	@MockBean
-	JwtIssuerAuthenticationManagerResolver jwtIssuerAuthenticationManagerResolver;
 	@MockBean
 	DrinkRepository drinkRepo;
 	@MockBean
