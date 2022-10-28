@@ -41,7 +41,8 @@ Replace `SecurityConfig` with
 ```java
 @Configuration
 @EnableMethodSecurity
-public class SecurityConfig {/**
+public class SecurityConfig {
+	/**
 	 * <p>
 	 * Switch {@link Authentication} implementation for valid JWTs from Spring's
 	 * default {@link JwtAuthenticationToken} to
